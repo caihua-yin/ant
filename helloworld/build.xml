@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project default="run-jar" basedir=".">
+        <property name="appname" value="helloworld" />
+        <property name="base" value="." />
+        <property name="src" value="src" />
+        <property name="classpath" value="class" />
+        <property name="jar" value="jar" />
+        <property name="main-class" value="com.caihua.helloworld.Helloworld" />
+
+        <target name="build">
+                <mkdir dir="${classpath}" />
+                <!-- Equivalent to javac -sourcepath ${src} -d ${classpath} ${src}/Helloworld.java-->
+                <javac classpath="$classpath" srcdir="${src}" destdir="${classpath}" includeantruntime="on">
+                        <include name="Helloworld.java" />
+                </javac>
+        </target>
+
+        <target name="run" depends="build">
+                <!-- Equivalent to java -cp ${classpath} com.caihua.helloworld.Helloworld -->
+                <exec executable="java">
+                        <arg line=" -classpath ${classpath} ${main-class}" />
+                </exec>
+        </target>
+
+        <target name="jar" depends="build">
+                <mkdir dir="${jar}" />
+                <!-- Equivalent to:
+                    echo "Main-Class: com.caihua.helloworld.Helloworld" > Manifest
+                    jar cfm jar/Helloworld.jar Manifest -C classes .
+                    java -jar jar/Helloworld.jar
+                -->
+                <jar destfile="${jar}/Helloworld.jar" basedir="${classpath}">
+                        <manifest>
+                                <attribute name="Main-Class" value="${main-class}"/>
+                        </manifest>
+                </jar>
+        </target>
+
+        <target name="run-jar" depends="jar">
+                <!-- Equivalent to java jar/Helloworld.jar-->
+                <java jar="${jar}/Helloworld.jar" fork="true"/>
+        </target>
+
+        <target name="clean">
+                <delete includeEmptyDirs="true">
+                        <fileset dir="${classpath}"/>
+                        <fileset dir="${jar}"/>
+                </delete>
+        </target>
+</project>
